@@ -5,18 +5,18 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.gesturedemo.ui.theme.GestureDemoTheme
+import kotlin.math.roundToInt
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,36 +34,25 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MainScreen(modifier: Modifier = Modifier) {
-    TapPressDemo(modifier)
+    PointerInputDrag(modifier)
 }
 
 @Composable
-fun TapPressDemo(modifier: Modifier = Modifier) {
-    var textState by remember { mutableStateOf("Waiting ....") }
-
-    val tapHandler = { status: String ->
-        textState = status
-    }
-
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier.fillMaxSize()
-    ) {
-        Text(text = textState, fontSize = 24.sp)
-        Spacer(modifier = Modifier.height(20.dp))
+fun PointerInputDrag(modifier: Modifier = Modifier) {
+    Box(modifier = modifier.fillMaxSize()) {
+        var xOffset by remember { mutableStateOf(0f) }
+        var yOffset by remember { mutableStateOf(0f) }
 
         Box(
             Modifier
-                .padding(10.dp)
+                .offset { IntOffset(xOffset.roundToInt(), yOffset.roundToInt()) }
                 .background(Color.Blue)
                 .size(100.dp)
                 .pointerInput(Unit) {
-                    detectTapGestures(
-                        onPress = { tapHandler("onPress Detected") },
-                        onDoubleTap = { tapHandler("onDoubleTap Detected") },
-                        onLongPress = { tapHandler("onLongPress Detected") },
-                        onTap = { tapHandler("onTap Detected") }
-                    )
+                    detectDragGestures { _, distance ->
+                        xOffset += distance.x
+                        yOffset += distance.y
+                    }
                 }
         )
     }
