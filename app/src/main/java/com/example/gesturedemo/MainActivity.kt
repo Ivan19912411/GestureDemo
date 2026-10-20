@@ -11,6 +11,7 @@ import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.*
@@ -28,9 +29,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             GestureDemoTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    // Обратите внимание: здесь мы не используем innerPadding,
-                    // чтобы прокрутка работала на весь экран
-                    ScrollableModifier()
+                    // Исправление 1: Передаем innerPadding внутрь
+                    ScrollableModifier(modifier = Modifier.padding(innerPadding))
                 }
             }
         }
@@ -39,10 +39,11 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun ScrollableModifier(modifier: Modifier = Modifier) {
-    var offset by remember { mutableStateOf(0f) }
+
+    var offset by remember { mutableFloatStateOf(0f) }
 
     Box(
-        modifier
+        modifier = modifier
             .fillMaxSize()
             .scrollable(
                 orientation = Orientation.Vertical,
