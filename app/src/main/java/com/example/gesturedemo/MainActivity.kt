@@ -4,23 +4,22 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.rememberScrollableState
-import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.unit.dp
 import com.example.gesturedemo.ui.theme.GestureDemoTheme
-import kotlin.math.roundToInt
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,8 +28,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             GestureDemoTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    // Исправление 1: Передаем innerPadding внутрь
-                    ScrollableModifier(modifier = Modifier.padding(innerPadding))
+
+                    ScrollModifiers(modifier = Modifier.padding(innerPadding))
                 }
             }
         }
@@ -38,26 +37,23 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun ScrollableModifier(modifier: Modifier = Modifier) {
+fun ScrollModifiers(modifier: Modifier = Modifier) {
 
-    var offset by remember { mutableFloatStateOf(0f) }
+    val image = ImageBitmap.imageResource(id = R.drawable.vacation)
 
     Box(
         modifier = modifier
-            .fillMaxSize()
-            .scrollable(
-                orientation = Orientation.Vertical,
-                state = rememberScrollableState { distance ->
-                    offset += distance
-                    distance
-                }
-            )
+            .size(150.dp)
+            .verticalScroll(rememberScrollState())
+            .horizontalScroll(rememberScrollState())
     ) {
-        Box(
-            modifier = Modifier
-                .size(90.dp)
-                .offset { IntOffset(0, offset.roundToInt()) }
-                .background(Color.Red)
-        )
+        Canvas(
+            modifier = Modifier.size(360.dp, 270.dp)
+        ) {
+            drawImage(
+                image = image,
+                topLeft = Offset(0f, 0f)
+            )
+        }
     }
 }
